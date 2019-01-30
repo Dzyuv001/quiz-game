@@ -1,0 +1,155 @@
+body {
+    background-color: #eee;
+}
+
+.container, .questionContainer {
+    background-color: #fff;
+    padding: 15px;
+    margin: 10px auto;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+#stickyTop {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0; 
+    background-color: #fff;
+    padding-bottom: 10px;
+    margin: 10px auto;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    z-index: top;
+}
+
+.controls {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.option {
+    margin: 18px;
+}
+
+.questionText, .optionText {
+    margin: 5px;
+}
+
+.questionText {
+    margin-left: 0px;
+}
+
+.btnDeleteQuestion {
+    margin: 5px;
+    float: right;
+}
+
+.optionText {
+    display: inline;
+    width: 300px;
+}
+
+ol {
+    padding: 0px;
+}
+
+#btnCheck {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+#txtWords {
+    text-align: center;
+    font-size: 1.5em;
+}
+
+#txtWords:focus {
+    outline: none;
+}
+
+#txtScore {
+    text-align: right;
+    font-size: 2em;
+    font-weight: 600;
+    text-align: center;
+}
+
+#controls {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+input[type="checkbox"] {
+    width: 25px;
+    height: 25px;
+    vertical-align: text-top;
+    margin-left: 5px;
+}
+
+#wrongScore {
+    color: #900;
+}
+
+#rightScore {
+    color: #090;
+}
+
+.txtQuestionTitle {
+    font-size: 2em;
+}
+
+#btnCheck {
+    display: none;
+}
+
+.btnOption {
+    border: solid 2px rgba(0, 0, 0, 0);
+    background-color:#ddd;
+    margin:1%;
+    width: 48%;
+    font-size: 1.5em;
+    display: inline-block;
+    text-align: center;
+    border-radius: 4px;
+    transition: background-color 0.1s ease;
+}
+
+.btnOption:hover {
+    color: #fff;
+    background-color: #007bff;
+}
+
+.correct {
+    color: #fff;
+    background-color: #090;
+}
+
+.incorrect{
+    color: #fff;
+    background-color: #900; 
+}
+
+.qCorrect {
+    color: #090;
+}
+
+.qIncorrect{
+    color: #900; 
+}
+.selected {
+    border: solid 2px #900;
+}
+
+.error {
+    border-color: #900;
+}
+
+.txtError, .txtOptionError {
+    color: #900;
+    display: none;
+}
+
+.txtOptionError {
+    margin-left: 20%;
+}
