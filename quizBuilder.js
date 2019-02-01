@@ -81,7 +81,7 @@ function isQuizValid() { // used to ensure that the quiz is playable
         }
     });
     console.log(isValid);
-    return false; // TODO: 
+    return isValid; // TODO: 
 }
 
 function displayError(elem, valid, type) { // add error 

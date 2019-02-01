@@ -22,6 +22,33 @@ body {
     z-index: top;
 }
 
+section {
+    display: none;
+    padding: 20px 0 0;
+    /* border-top: 1px solid #abc; */
+  }
+
+#tab1, #tab2{
+    opacity: 0;
+    width: 0px;
+    height: 0px;
+}
+#tab1:checked ~ #content1,
+#tab2:checked ~ #content2 {
+    display: block;
+}
+
+#tab1:checked ~ label,
+#tab2:checked ~ label {
+    /* background-color: #007bff; */
+}
+
+.tabLabel{
+    width: 49%;
+    text-align: center;
+    border-bottom: 1px solid #fff; 
+}
+
 .controls {
     text-align: center;
     margin-bottom: 15px;
