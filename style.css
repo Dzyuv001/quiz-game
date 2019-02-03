@@ -51,7 +51,6 @@ section {
 
 #tab2:checked ~ #tab2Label {
     margin-right: -5px;
-
 }
 .tabLabel{
     margin: 0px;
