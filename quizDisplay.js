@@ -1,41 +1,73 @@
 var dataController = (function () { //model
     // used to store questions and answers
-    var quizData = {};
-    var quizDataStruct = {};
+    var quizBuildData = {};
+    var quizLoadData = {};
+
+    var active = true; // used to see which tab is selected
 
     // game data
     var numOfQuestions = 0;
     var numOfCorrect = 0;
     var quizIncomplete = true;
-return {
-    loadQuiz: function() {
-        txtTitle.val(quizDataStruct.quizTitle);
-        questions.empty();
-        quizDataStruct.questions.forEach(function (q, i) {
-            questions.append(addQuestion);
-            // question container 
-            var qCon = $($(".questionContainer")[i]);
-            qCon.find(".questionText").val(q.question);
-            q.options.forEach(function (o, j) {
-                qCon.find("ol").append(addOption);
-                var oCon = $(qCon.find("li")[j]);
-                oCon.find(".optionText").val(o.op);
-                oCon.find(".chkCorrect").prop("checked", o.chk);
+    return {
+        activeTab: function (bool) {
+            active = bool;
+        },
+        setQuizData: function (data) {
+            if (active) {
+                quizBuildData = data;
+            } else {
+                quizLoadData = data;
+            }
+            console.log(quizBuildData);
+            console.log(quizLoadData);
+        },
+        loadQuiz: function () {
+            txtTitle.val(quizDataStruct.quizTitle);
+            questions.empty();
+            quizDataStruct.questions.forEach(function (q, i) {
+                questions.append(addQuestion);
+                // question container 
+                var qCon = $($(".questionContainer")[i]);
+                qCon.find(".questionText").val(q.question);
+                q.options.forEach(function (o, j) {
+                    qCon.find("ol").append(addOption);
+                    var oCon = $(qCon.find("li")[j]);
+                    oCon.find(".optionText").val(o.op);
+                    oCon.find(".chkCorrect").prop("checked", o.chk);
+                });
             });
-        });
-    },
-    dataReset: function() {
-        numOfQuestions = 0;
-        numOfCorrect = 0;
-        quizIncomplete = true;
-    }
-}; 
+        },
+        getQuizBuildData: function(){
+return quizBuildData;
+        },
+        getQuizLoadData: function (){
+return quizLoadData;
+        },
+        getQuizComplete: function () {
+            return quizIncomplete;
+        },
+        getNumOfQuestions: function () {
+            return numOfQuestions;
+        },
+        getNumOfCorrect: function () {
+            return uumOfCorrect;
+        },
+        dataReset: function () {
+            numOfQuestions = 0;
+            numOfCorrect = 0;
+            quizIncomplete = true;
+        }
+    };
 })();
 
 var uiControler = (function () { //view
-    var questionHTML, optionHTML;
+    var questionHTML, optionHTML, popQuestion, popOption;
     var uiElements = {
-        jsonQuiz: $("#jsonQuiz"),
+        btnTab1: $("#tab1"),
+        btnTab2: $("#tab2"),
+        btnEditQuiz: $("#btnEditQuiz"),
+        btnGetQuiz: $("#btnGetQuiz"),
         txtScore: $("#txtScore"),
         quizTitle: $("#quizTitle"),
         gameElements: $("#gameElements"),
@@ -69,156 +101,11 @@ var uiControler = (function () { //view
         optionHTML += '<input class="chkCorrect" type="checkbox" value="">';
         optionHTML += '<p class="txtOptionError"> An option has been left blank</p>';
         optionHTML += '</li>';
+        popQuestion = ['<div class="questionContainer"></div>'];
+        popOption = ['<div class="btnOption">', '</div>'];
     }
 
-    function popQuiz() { // will generate and populate the quiz elements
-        var question = ['<div class="questionContainer"></div>'];
-        var option = ['<div class="btnOption">', '</div>'];
-        quizTitle.text(quizData.quizTitle);
-        numOfQuestions = quizData.questions.length; // set the number of questions 
-        quizData.questions.forEach(function (q, i) { // loops through questions
-            questions.append(question);
-            $(".questionContainer").last().append('<div class="txtQuestionTitle">' + (i + 1) + " " + quizData.questions[i].question + '<span></span></div>');
-            quizData.questions[i].options.forEach(function (o, j) { // loops through options of questions
-                var fullOption = option[0] + o.op + option[1];
-                $(".questionContainer").last().append(option[0] + (j + 1) + ": " + o.op + option[1]);
-            });
-        });
-    }
-
-    htmlData();
-    return {
-        getUIElem: function () {
-            return uiElements;
-        },
-        addQuestion: function () {
-            $("#questions").append(questionHTML);
-            console.log($(".questionContainer")[$(".questionContainer").length - 1]);
-            for (let i = 0; i < 4; i++) {
-                $($(".questionContainer")[$(".questionContainer").length - 1]).find("ol")
-                    .append(optionHTML);
-            }
-        },
-        addQuestionOption: function () {
-            $(this).prev("ol").append(optionHTML);
-
-        },
-        removeParent: function () {
-            console.log("question Deleted?");
-            console.log("option Deleted");
-            $(this).parent().remove();
-        },
-        textError: function () {
-            if ($(this).val() == "") {
-                $(this).addClass("is-invalid");
-                $(this).parent().find(".txtError").show();
-            } else {
-                $(this).removeClass("is-invalid");
-                $(this).parent().find(".txtError").hide();
-            }
-        },
-        optionTextError: function () {
-            if ($(this).val() == "") {
-                $(this).addClass("is-invalid");
-                $(this).parent().find(".txtOptionError").show();
-            } else {
-                $(this).removeClass("is-invalid");
-                $(this).parent().find(".txtOptionError").hide();
-            }
-        },
-        saveGame: function(){
-            if (isQuizValid()) {
-                getQuizData();
-                var jsonData = JSON.stringify(quizDataStruct);
-                console.log(quizDataStruct);
-                console.log("data saved");
-                download(jsonData, quizDataStruct.quizTitle + 'test.json', 'application/json');
-            }
-        },
-        checkQuiz : function(){ // check quiz
-            if (quizIncomplete) {
-                if (validation()) {
-                    checkCorrect();
-                    txtScore.html("You scored " + numOfCorrect + " out of " + numOfQuestions);
-                    highlightCorrect();
-                } else {
-                    // TODO: will prompt the user to finnish the quiz 
-                }
-            }
-        },
-        selectAns : function(){
-            if (quizIncomplete) {
-                $(this).toggleClass("selected");
-                console.log("ans clicked");
-            }
-        },
-        clearQuiz: function() {
-            $("#questions").empty();
-        }
-    };
-})();
-
-var controller = (function (dataCtrl, UICtrl) { //controller
-    var setupEvents = function () {
-        var uiElem = UICtrl.getUIElem();
-        uiElem.btnAddQuestion.on("click", UICtrl.addQuestion);
-        uiElem.gameElements.on("click", uiElem.btnAddQuestionOption, UICtrl.addQuestionOption);
-        uiElem.gameElements.on("click", uiElem.btnDeleteQuestion, UICtrl.removeParent);
-        uiElem.gameElements.on("click", uiElem.btnDeleteOption, UICtrl.removeParent);
-        uiElem.txtTitle.on("input", UICtrl.textError);
-        uiElem.gameElements.on("input", uiElem.optionText, UICtrl.optionTextError);
-        uiElem.gameElements.on("input", uiElem.questionText, UICtrl.textError);
-        uiElem.btnSaveGame.on("click", UICtrl.saveGame);
-        uiElem.jsonQuiz.change(onChange);
-        uiElem.btnCheck.on("click", UICtrl.checkQuiz); 
-        uiElem.gameElements.on("click", uiElem.btnOption, UICtrl.selectAns);  
-    };
-
-    var download = function (content, fileName, contentType) {
-        var a = document.createElement("a");
-        var file = new Blob([content], {
-            type: contentType
-        });
-        a.href = URL.createObjectURL(file);
-        a.download = fileName;
-        a.click();
-    };
-
-    var onChange = function(e) {
-        var reader = new FileReader();
-        reader.onload = onReaderLoad;
-        reader.readAsText(e.target.files[0]);
-    };
-
-    // function onReaderLoad(event) {
-    //     quizData = JSON.parse(event.target.result);
-    //     btnCheck.show();
-    //     console.log(quizData);
-    //     init();
-    //     clearQuiz();
-    //     popQuiz();
-    // }
-
-    var onReaderLoad = function(event) {
-        quizDataStruct = JSON.parse(event.target.result);
-        console.log(quizDataStruct);
-        loadQuiz();
-    };
-
-    var validation = function() { // used to see if all the questions had been answered
-        var valid = false;
-        $(".questionContainer").each(function (i, q) { // used to loop through all the questions
-            //  console.log($(q).find(".selected").length);
-            if ($(q).find(".selected").length > 0) { // if an answer is not selected 
-                valid = true;
-            } else {
-                valid = false;
-            }
-        });
-        return valid; // returns the validity of user inputs 
-    };
-
-    var getQuizData = function() { // gathers all the quiz data ready to be saved as a json file for later use.
+    var getQuizData = function () { // gathers all the quiz data ready to be saved as a json file for later use.
         var questions = $("#questions .questionContainer").toArray();
         quizDataStruct.quizTitle = txtTitle.val();
         quizDataStruct.questions = [];
@@ -237,7 +124,20 @@ var controller = (function (dataCtrl, UICtrl) { //controller
         });
     };
 
-    var checkCorrect =  function() {
+    var validation = function () { // used to see if all the questions had been answered
+        var valid = false;
+        $(".questionContainer").each(function (i, q) { // used to loop through all the questions
+            //  console.log($(q).find(".selected").length);
+            if ($(q).find(".selected").length > 0) { // if an answer is not selected 
+                valid = true;
+            } else {
+                valid = false;
+            }
+        });
+        return valid; // returns the validity of user inputs 
+    };
+
+    var checkCorrect = function () {
         numOfCorrect = 0; // resets the value of the correct counter
         $(".questionContainer").each(function (i, q) { // i is index and q is the question
             // let used to have the value reset when the code block is executed
@@ -259,80 +159,237 @@ var controller = (function (dataCtrl, UICtrl) { //controller
         quizIncomplete = false;
     };
 
-    var highlightCorrect = function() {
-        $(".questionContainer").each(function (i, q) {
-            $(q).find(".btnOption").each(function (j, o) {
-                if (quizData.questions[i].options[j].chk) {
-                    $(o).addClass("correct");
+    htmlData();
+    return {
+        getUIElem: function () {
+            return uiElements;
+        },
+        addQuestion: function () {
+            $("#questions").append(questionHTML);
+            console.log($(".questionContainer")[$(".questionContainer").length - 1]);
+            for (let i = 0; i < 4; i++) {
+                $($(".questionContainer")[$(".questionContainer").length - 1]).find("ol")
+                    .append(optionHTML);
+            }
+            console.log("addQuestion");
+        },
+        addQuestionOption: function () {
+            $(this).prev("ol").append(optionHTML);
+            console.log("addQuestionOption");
+            console.log($(this).css("color", "red"));
+        },
+        removeParent: function () {
+            //console.log("question Deleted?");
+           // console.log("option Deleted");
+           // $(this).parent().remove();
+        },
+        textError: function () {
+            if ($(this).val() == "") {
+                $(this).addClass("is-invalid");
+                $(this).parent().find(".txtError").show();
+            } else {
+                $(this).removeClass("is-invalid");
+                $(this).parent().find(".txtError").hide();
+            }
+            console.log("textError");
+        },
+        optionTextError: function () {
+            if ($(this).val() == "") {
+                $(this).addClass("is-invalid");
+                $(this).parent().find(".txtOptionError").show();
+            } else {
+                $(this).removeClass("is-invalid");
+                $(this).parent().find(".txtOptionError").hide();
+            }
+            console.log("addQuestion");
+        },
+        saveGame: function (isQuizValid) {
+            if (isQuizValid) {
+                getQuizData();
+                var jsonData = JSON.stringify(quizDataStruct);
+                console.log(quizDataStruct);
+                console.log("data saved");
+                download(jsonData, quizDataStruct.quizTitle + 'test.json', 'application/json');
+            }
+            console.log("saveGame");
+        },
+        checkQuiz: function (quizIncomplete, numOfCorrect, numOfQuestions) { // check quiz
+            if (quizIncomplete) {
+                if (validation()) {
+                    checkCorrect();
+                    txtScore.html("You scored " + numOfCorrect + " out of " + numOfQuestions);
+                    highlightCorrect();
+                } else {
+                    // TODO: will prompt the user to finnish the quiz 
                 }
-                if (!quizData.questions[i].options[j].chk && $(o).hasClass("selected")) {
-                    $(o).addClass("incorrect");
+            }
+            console.log("checkQuiz");
+        },
+        selectAns: function (that, quizIncomplete) { //
+            // if (quizIncomplete) {
+            //     $(that).toggleClass("selected");
+            //     console.log("ans clicked");
+            // }
+            // console.log("selectAns");
+        },
+        clearQuiz: function () {
+            $("#questions").empty();
+            console.log("clearQuiz");
+        },
+        displayError : function (elem, valid, type) { // add error 
+            console.log("displayError");
+            if (elem.val() == "" || !valid) {
+                elem.addClass("is-invalid");
+                switch (type) {
+                    case "txtTitle":
+                        elem.parent().find(".txtError").show();
+                        break;
+                    case "optionText":
+                        elem.parent().find(".txtOptionError").show();
+                        break;
+                    case "questionText":
+                        elem.siblings(".txtError").show();
+                        break;
+                    default:
+                        break;
+                }
+                return false;
+            } else {
+                return true;
+            }
+        }
+    };
+})();
+
+var controller = (function (dataCtrl, UICtrl) { //controller
+    var uiElem = UICtrl.getUIElem();
+    var setupEvents = function () {
+        uiElem.btnTab1.on("click", function () {
+            dataCtrl.activeTab(true);
+        });
+        uiElem.btnTab2.on("click", function () {
+            dataCtrl.activeTab(false);
+        });
+        uiElem.btnAddQuestion.on("click", UICtrl.addQuestion);
+        uiElem.gameElements.on("click", uiElem.btnAddQuestionOption, UICtrl.addQuestionOption);
+        uiElem.gameElements.on("click", uiElem.btnDeleteQuestion, UICtrl.removeParent);
+        uiElem.gameElements.on("click", uiElem.btnDeleteOption, UICtrl.removeParent);
+        uiElem.txtTitle.on("input", UICtrl.textError);
+        uiElem.gameElements.on("input", uiElem.optionText, UICtrl.optionTextError);
+        uiElem.gameElements.on("input", uiElem.questionText, UICtrl.textError);
+        uiElem.btnSaveGame.on("click", function(){
+           UICtrl.saveGame(isQuizValid);
+        });
+        uiElem.btnEditQuiz.change(editQuiz);
+        uiElem.btnGetQuiz.change(loadQuiz);
+        uiElem.btnCheck.on("click", function () {
+            UICtrl.checkQuiz(dataCtrl.getQuizComplete, dataCtrl.getNumOfQuestions,
+                dataCtrl.getNumOfCorrect);
+        });
+        uiElem.gameElements.on("click", uiElem.btnOption, function () {
+            UICtrl.selectAns(this, dataCtrl.getQuizComplete);
+        });
+    };
+        var download = function (content, fileName, contentType) {
+            var a = document.createElement("a");
+            var file = new Blob([content], {
+                type: contentType
+            });
+            a.href = URL.createObjectURL(file);
+            a.download = fileName;
+            a.click();
+        };
+
+        var onChange = function (e) {
+            var reader = new FileReader();
+            reader.onload = onReaderLoad;
+            reader.readAsText(e.target.files[0]);
+        };
+
+        var editQuiz = function (e) {
+            onChange(e);
+        };
+
+        var loadQuiz = function (e) {
+            onChange(e);
+            //init();
+            UICtrl.clearQuiz();
+            popQuiz();
+        };
+
+        var onReaderLoad = function (event) {
+            dataCtrl.setQuizData = JSON.parse(event.target.result);
+        };
+
+        var popQuiz = function () { // will generate and populate the quiz elements
+            var question = ['<div class="questionContainer"></div>'];
+            var option = ['<div class="btnOption">', '</div>'];
+            var quizData = dataCtrl.getQuizBuildData();
+            console.log(quizData);
+            uiElem.quizTitle.text(quizData.quizTitle);
+            numOfQuestions = quizData.questions.length; // set the number of questions 
+            quizData.questions.forEach(function (q, i) { // loops through questions
+                questions.append(question);
+                $(".questionContainer").last().append('<div class="txtQuestionTitle">' + (i + 1) + " " + quizData.questions[i].question + '<span></span></div>');
+                quizData.questions[i].options.forEach(function (o, j) { // loops through options of questions
+                    var fullOption = option[0] + o.op + option[1];
+                    $(".questionContainer").last().append(option[0] + (j + 1) + ": " + o.op + option[1]);
+                });
+            });
+        };
+        
+        var highlightCorrect = function () {
+            $(".questionContainer").each(function (i, q) {
+                $(q).find(".btnOption").each(function (j, o) {
+                    if (quizData.questions[i].options[j].chk) {
+                        $(o).addClass("correct");
+                    }
+                    if (!quizData.questions[i].options[j].chk && $(o).hasClass("selected")) {
+                        $(o).addClass("incorrect");
+                    }
+                });
+            });
+        };
+
+        var isQuizValid = function () { // used to ensure that the quiz is playable
+            var isValid = true;
+            UICtrl.displayError(txtTitle, isValid, "txtTitle"); // check if there is quiz title
+
+            $("input:text").each(function () { // check that all the options are filled in
+                UICtrl.displayError($(this), isValid, "optionText");
+            });
+            $("textarea").each(function () { //check if question are filled out
+                UICtrl.displayError($(this), isValid, "questionText");
+            });
+            // check if the quiz has any questions
+            if ($(".questionContainer").length == 0) {
+                isValid = false;
+                console.log("cant have a quiz with no questions");
+            }
+            $(".questionContainer").each(function (i) {
+                let qCon = $($(".questionContainer")[i]);
+                // check if there are more than 1 options per question
+                if (qCon.find("li").length < 2) {
+                    isValid = false;
+                    console.log("you need more than 1 option per question");
+                }
+                // check at least one answer is selelcted or if not all answer are selected as the correct answers
+                if (qCon.find(":checked").length == 0) {
+                    isValid = false;
+                    console.log("checkbox for question left blank");
+                } else if (qCon.find(":checked").length == qCon.find(".chkCorrect").length) {
+                    isValid = false;
+                    console.log("cant have all the boxes checked");
                 }
             });
-        });
-    };
+            return isValid;
+        };
 
-    var isQuizValid = function() { // used to ensure that the quiz is playable
-        var isValid = true;
-        displayError(txtTitle, isValid, "txtTitle"); // check if there is quiz title
-
-        $("input:text").each(function () { // check that all the options are filled in
-            displayError($(this), isValid, "optionText");
-        });
-        $("textarea").each(function () { //check if question are filled out
-            displayError($(this), isValid, "questionText");
-        });
-        // check if the quiz has any questions
-        if ($(".questionContainer").length == 0) {
-            isValid = false;
-            console.log("cant have a quiz with no questions");
-        }
-        $(".questionContainer").each(function (i) {
-            let qCon = $($(".questionContainer")[i]);
-            // check if there are more than 1 options per question
-            if (qCon.find("li").length < 2) {
-                isValid = false;
-                console.log("you need more than 1 option per question");
+        return {
+            init: function () {
+                setupEvents();
             }
-            // check at least one answer is selelcted or if not all answer are selected as the correct answers
-            if (qCon.find(":checked").length == 0) {
-                isValid = false;
-                console.log("checkbox for question left blank");
-            } else if (qCon.find(":checked").length == qCon.find(".chkCorrect").length) {
-                isValid = false;
-                console.log("cant have all the boxes checked");
-            }
-        });
-        return isValid;
-    };
-
-    var displayError = function(elem, valid, type) { // add error 
-        if (elem.val() == "" || !valid) {
-            elem.addClass("is-invalid");
-            switch (type) {
-                case "txtTitle":
-                    elem.parent().find(".txtError").show();
-                    break;
-                case "optionText":
-                    elem.parent().find(".txtOptionError").show();
-                    break;
-                case "questionText":
-                    elem.siblings(".txtError").show();
-                    break;
-                default:
-                    break;
-            }
-            return false;
-        } else {
-            return true;
-        }
-    };
-
-    return {
-        init: function () {
-            setupEvents();
-        }
-    };
+        };
 })(dataController, uiControler);
 
 controller.init(); // <-- starting point of the application
