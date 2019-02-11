@@ -29,6 +29,9 @@ var dataController = (function () { //model
         getQuizComplete: function () {
             return quizIncomplete;
         },
+        setNumOfQuestions: function (numOfQ) {
+            numOfQ = numOfQuestions;
+        },
         getNumOfQuestions: function () {
             return numOfQuestions;
         },
@@ -53,7 +56,7 @@ var uiControler = (function () { //view
         txtScore: $("#txtScore"),
         quizTitle: $("#quizTitle"),
         gameElements: $("#gameElements"),
-        questions: $("#questions"),
+        editQuestions: $("#editQuestions"),
         btnCheck: $("#btnCheck"),
         btnOption: ".btnOption",
         txtTitle: $("#txtTitle"),
@@ -69,15 +72,15 @@ var uiControler = (function () { //view
     };
 
     function htmlData() {
-        questionHTML = '<div class="questionContainer">';
+        questionHTML = '<li class="questionContainer">';
         questionHTML += '<button class="btn btn-danger btnDeleteQuestion">Delete Questions</button>';
-        questionHTML += '<label for="txtQ1Title">Question 1</label>';
+        questionHTML += '<label for="txtQ1Title"></label>';
         questionHTML += '<textarea name="txtQuestionTitle" class="form-control questionText" id="txtQuestionTitle" cols="10" rows="3" placeholder="Question"></textarea>';
         questionHTML += '<p class="txtError"> The question can`t left blank</p>';
         questionHTML += '<ol class="option" type="A">';
         questionHTML += '</ol>';
         questionHTML += '<button class="btn btn-primary btnAddQuestionOption">+ Add Option</button>';
-        questionHTML += '</div>';
+        questionHTML += '</li>';
         optionHTML = '<li>';
         optionHTML += '<button class="btn btn-danger btnDeleteOption">Delete Option</button>';
         optionHTML += '<input type="text" class="form-control optionText" placeholder="Option">';
@@ -89,7 +92,7 @@ var uiControler = (function () { //view
     }
 
     var getQuizData = function (quizBuildData) { // gathers all the quiz data ready to be saved as a json file for later use.
-        var questions = $("#questions .questionContainer").toArray();
+        var questions = $("#editQuestions .questionContainer").toArray();
         quizBuildData.quizTitle = uiElements.txtTitle.val();
         quizBuildData.questions = [];
         questions.forEach(function (q) { // q stands for question
@@ -161,7 +164,7 @@ var uiControler = (function () { //view
             return uiElements;
         },
         addQuestion: function () {
-            $("#questions").append(questionHTML);
+            $("#editQuestions").append(questionHTML);
             console.log($(uiElements.questionContainer)[$(uiElements.questionContainer).length - 1]);
             for (let i = 0; i < 4; i++) {
                 $($(uiElements.questionContainer)[$(uiElements.questionContainer).length - 1]).find("ol")
@@ -198,7 +201,7 @@ var uiControler = (function () { //view
             }
             console.log("addQuestion");
         },
-        saveGame: function (isQuizValid, quizBuildData,download) {
+        saveGame: function (isQuizValid, quizBuildData, download) {
             console.log("this is a thing" + isQuizValid());
             if (isQuizValid()) {
                 getQuizData(quizBuildData);
@@ -228,13 +231,13 @@ var uiControler = (function () { //view
             console.log("selectAns");
         },
         clearQuiz: function () {
-            $("#questions").empty();
+            $("#editQuestions").empty();
             console.log("clearQuiz");
         },
-        getQuestionHTML : function(){
+        getQuestionHTML: function () {
             return questionHTML;
         },
-        getOptionHTML : function (){
+        getOptionHTML: function () {
             return optionHTML;
         },
         displayError: function (elem, valid, type) { // add error 
@@ -280,7 +283,7 @@ var controller = (function (dataCtrl, UICtrl) { //controller
         uiElem.gameElements.on("input", uiElem.optionText, UICtrl.optionTextError);
         uiElem.gameElements.on("input", uiElem.questionText, UICtrl.textError);
         uiElem.btnSaveGame.on("click", function () {
-            UICtrl.saveGame(isQuizValid, dataCtrl.getQuizBuildData(),download);
+            UICtrl.saveGame(isQuizValid, dataCtrl.getQuizBuildData(), download);
         });
         uiElem.btnEditQuiz.change(editQuiz);
         uiElem.btnGetQuiz.change(loadQuiz);
@@ -314,10 +317,10 @@ var controller = (function (dataCtrl, UICtrl) { //controller
 
     var editQuiz = function (e) {
         onChange(e);
-       // set
-       setTimeout(function() {
-        loadQuizElements();
-       },2000);
+        // set
+        setTimeout(function () {
+            loadQuizElements();
+        }, 2000);
     };
 
     var loadQuiz = function (e) {
@@ -327,14 +330,14 @@ var controller = (function (dataCtrl, UICtrl) { //controller
         popQuiz();
     };
 
-   var loadQuizElements =  function () {
-    let quizBuildData = dataCtrl.getQuizBuildData();
+    var loadQuizElements = function () {
+        let quizBuildData = dataCtrl.getQuizBuildData();
         uiElem.txtTitle.val(quizBuildData.quizTitle);
         console.log(quizBuildData);
-        uiElem.questions.empty();
-        
+        uiElem.editQuestions.empty();
+
         quizBuildData.questions.forEach(function (q, i) {
-            uiElem.questions.append(UICtrl.getQuestionHTML);
+            uiElem.editQuestions.append(UICtrl.getQuestionHTML);
             // question container 
             var qCon = $($(".questionContainer")[i]);
             qCon.find(".questionText").val(q.question);
@@ -350,8 +353,7 @@ var controller = (function (dataCtrl, UICtrl) { //controller
     var popQuiz = function () { // will generate and populate the quiz elements
         var question = ['<div class="questionContainer"></div>'];
         var option = ['<div class="btnOption">', '</div>'];
-        var quizData = dataCtrl.getQuizBuildData();
-        console.log(quizData);
+        var quizData = dataCtrl.getQuizLoadData();
         uiElem.quizTitle.text(quizData.quizTitle);
         numOfQuestions = quizData.questions.length; // set the number of questions 
         quizData.questions.forEach(function (q, i) { // loops through questions

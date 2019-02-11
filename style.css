@@ -72,6 +72,7 @@ section {
 
 .questionText, .optionText {
     margin: 5px;
+    vertical-align: middle;
 }
 
 .questionText {
@@ -86,6 +87,18 @@ section {
 .optionText {
     display: inline;
     width: 300px;
+}
+
+#editQuestions{
+    list-style-type: none;
+    counter-reset: elementcounter;
+    padding-left: 0;
+}
+
+#editQuestions > li:before{
+    content: "Question " counter(elementcounter);
+    counter-increment:elementcounter;
+    /* font-weight: bold; */
 }
 
 ol {

@@ -36,8 +36,8 @@
                 <label for="txtTitle">Game Name</label>
                 <input type="text" id="txtTitle" class="form-control" placeholder="Name">
                 <p class="txtError">The title cant be left blank.</p>
-                <div id="questions">
-                    <div class="questionContainer">
+                <ol id="editQuestions" >
+                    <li class="questionContainer">
                         <button class="btn btn-danger btnDeleteQuestion">Delete Questions</button>
                         <label for="txtQuestionTitle"></label>
                         <textarea name="txtQuestionTitle" class="form-control questionText" id="txtQuestionTitle" cols="10"
@@ -52,8 +52,8 @@
                             </li>
                         </ol>
                         <button class="btn btn-primary btnAddQuestionOption">+ Add Option</button>
-                    </div>
-                </div>
+                    </li>
+                </ol>
             </div>
         </section>
         <section id="content2">
@@ -62,7 +62,7 @@
                 <div class="scoreDisplay">
                     <p id="txtScore"></p>
                 </div>
-                <div id="questions">
+                <div id="displayQuestions">
                 </div>
                 <label for="btnGetQuiz">Pick Quiz:</label>
                 <input type="file" id="btnGetQuiz" name="btnGetQuiz" accept="text/json">
