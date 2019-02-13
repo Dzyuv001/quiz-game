@@ -20,32 +20,32 @@ var dataController = (function () { //model
                 quizLoadData = data;
             }
         },
-        getQuizBuildData: function () {
+        getQuizBuildData: function () {//gets quiz build data variable
             return quizBuildData;
         },
-        getQuizLoadData: function () {
+        getQuizLoadData: function () {//gets quiz load data variable
             return quizLoadData;
         },
-        getQuizComplete: function () {
+        getQuizComplete: function () {//check if he quiz is complete
             return quizIncomplete;
         },
-        setNumOfQuestions: function (numOfQ) {
+        setNumOfQuestions: function (numOfQ) {//set number of questions there are in the quiz
             numOfQuestions = numOfQ;
         },
-        getNumOfQuestions: function () {
+        getNumOfQuestions: function () {//get number of questions 
             return numOfQuestions;
         },
-        setNumOfCorrect: function (numOfC) {
+        setNumOfCorrect: function (numOfC) {//set the number of correct questions
             numOfCorrect = numOfC;
         },
-        getNumOfCorrect: function () {
+        getNumOfCorrect: function () {//get number of questions the user answered correctly 
             return numOfCorrect;
         },
-        setQuizComplete: function (quizIncom, questionC) {
+        setQuizComplete: function (quizIncom, numOfC) {//set the quiz as complete and set the number of the questions the user answered correctly
             quizIncomplete = quizIncom;
-            questionContainer = questionC;
+            numOfCorrect = numOfC;
         },
-        dataReset: function () {
+        dataReset: function () {//used to reset the data class 
             numOfQuestions = 0;
             numOfCorrect = 0;
             quizIncomplete = true;
@@ -53,9 +53,9 @@ var dataController = (function () { //model
     };
 })();
 
-var uiControler = (function () { //view
-    var questionHTML, optionHTML, popQuestion, popOption;
-    var uiElements = {
+var uiController = (function () { //view
+    var questionHTML, optionHTML; // stores html that is added to make the up the build quiz form.
+    var uiElements = { // stores all the ui classes and ids 
         btnTab1: $("#tab1"),
         btnTab2: $("#tab2"),
         btnEditQuiz: $("#btnEditQuiz"),
@@ -81,7 +81,7 @@ var uiControler = (function () { //view
         selected: "selected"
     };
 
-    function htmlData() {
+    function htmlData() {//used to set the questionHTML, optionHTML 
         questionHTML = '<li class="questionContainer">';
         questionHTML += '<button class="btn btn-danger btnDeleteQuestion">Delete Questions</button>';
         questionHTML += '<label for="txtQ1Title"></label>';
@@ -123,7 +123,6 @@ var uiControler = (function () { //view
     var validation = function () { // used to see if all the questions had been answered
         var valid;
         $(uiElements.questionContainer).each(function (i, q) { // used to loop through all the questions
-            //  console.log($(q).find(".selected").length);
             if ($(q).find(".selected").length > 0) { // if an answer is not selected 
                 valid = true;
             } else {
@@ -134,6 +133,7 @@ var uiControler = (function () { //view
     };
 
     var highlightCorrect = function (quizData) {
+        //used to change colour of selected items after the quiz has been checked
         $(uiElements.questionContainer).each(function (i, q) {
             $(q).find(uiElements.btnOption).each(function (j, o) {
                 if (quizData.questions[i].options[j].chk) {
@@ -152,24 +152,20 @@ var uiControler = (function () { //view
             return uiElements;
         },
         addQuestion: function () {
+            //used to add a question div with relevant elements to the quiz builder
             $("#editQuestions").append(questionHTML);
-            console.log($(uiElements.questionContainer)[$(uiElements.questionContainer).length - 1]);
             for (let i = 0; i < 4; i++) {
                 $($(uiElements.questionContainer)[$(uiElements.questionContainer).length - 1]).find("ol")
                     .append(optionHTML);
             }
-            console.log("addQuestion");
         },
-        addQuestionOption: function () {
+        addQuestionOption: function () {//adds a question to the ordered list
             $(this).prev("ol").append(optionHTML);
-            console.log("addQuestionOption");
         },
-        removeParent: function () {
-            console.log("question Deleted?");
-            console.log($(this));
+        removeParent: function () {//remove the parent of clicked element
             $(this).parent().remove();
         },
-        textError: function () {
+        textError: function () {//used to display an error message telling the user to fill in the quiz title
             if ($(this).val() == "") {
                 $(this).addClass("is-invalid");
                 $(this).parent().find(".txtError").show();
@@ -177,9 +173,8 @@ var uiControler = (function () { //view
                 $(this).removeClass("is-invalid");
                 $(this).parent().find(".txtError").hide();
             }
-            console.log("textError");
         },
-        optionTextError: function () {
+        optionTextError: function () {//used to display an error message telling the user to fill in the option
             if ($(this).val() == "") {
                 $(this).addClass("is-invalid");
                 $(this).parent().find(".txtOptionError").show();
@@ -187,19 +182,16 @@ var uiControler = (function () { //view
                 $(this).removeClass("is-invalid");
                 $(this).parent().find(".txtOptionError").hide();
             }
-            console.log("addQuestion");
         },
-        saveGame: function (isQuizValid, quizBuildData, download) {
-            console.log("this is a thing" + isQuizValid());
+        saveGame: function (isQuizValid, quizBuildData, download) {//saves the 
             if (isQuizValid()) {
                 getQuizData(quizBuildData);
                 var jsonData = JSON.stringify(quizBuildData);
-                console.log(quizBuildData);
-                console.log("data saved");
                 download(jsonData, quizBuildData.quizTitle + '.json', 'application/json');
             }
         },
-        checkQuiz: function (quizIncomplete, numOfQuestions, quizData, checkCorrect) { // check quiz
+        checkQuiz: function (quizIncomplete, numOfQuestions, quizData, checkCorrect) { 
+            //checks to see if the user answers are correct
             if (quizIncomplete) {
                 if (validation()) {
                     var numOfCorrect = checkCorrect();
@@ -209,25 +201,22 @@ var uiControler = (function () { //view
                     alert("The quiz is not done. You need to fill out all the questions!");
                 }
             }
-            console.log("checkQuiz");
         },
-        selectAns: function (that, quizIncomplete) { //
+        selectAns: function (that, quizIncomplete) { //used to give selected answer an outline
             if (quizIncomplete) {
                 $(that).toggleClass("selected");
             }
         },
-        clearQuiz: function () {
+        clearQuiz: function () {// used to clear the quiz div element
             $("#editQuestions").empty();
-            console.log("clearQuiz");
         },
-        getQuestionHTML: function () {
+        getQuestionHTML: function () {//used to get question div html
             return questionHTML;
         },
-        getOptionHTML: function () {
+        getOptionHTML: function () {// used to get the option div html
             return optionHTML;
         },
         displayError: function (elem, valid, type) { // help show errors  
-            console.log("displayError");
             if (elem.val() == "" || !valid) {
                 elem.addClass("is-invalid");
                 switch (type) {
@@ -252,8 +241,10 @@ var uiControler = (function () { //view
 })();
 
 var controller = (function (dataCtrl, UICtrl) { //controller
-    var uiElem = UICtrl.getUIElem();
+    var uiElem = UICtrl.getUIElem();//link to the ui dictionary from the UI class 
     var setupEvents = function () {
+        // used to set up all the events in a since a clean way
+        //also nice for testing since you can turn off all the events
         uiElem.btnTab1.on("click", function () {
             dataCtrl.activeTab(true);
         });
@@ -280,7 +271,8 @@ var controller = (function (dataCtrl, UICtrl) { //controller
 
         });
     };
-    var download = function (content, fileName, contentType) {
+
+    var download = function (content, fileName, contentType) {//used for file download 
         var a = document.createElement("a");
         var file = new Blob([content], {
             type: contentType
@@ -291,23 +283,24 @@ var controller = (function (dataCtrl, UICtrl) { //controller
     };
 
     var onReaderLoad = function (event) {
+        //used to get data from downloaded JSON file and save it into a data structure
         dataCtrl.setQuizData(JSON.parse(event.target.result));
     };
 
-    var onChange = function (e) {
+    var onChange = function (e) {//used to set up the download for the JSON file
         var reader = new FileReader();
         reader.onload = onReaderLoad;
         reader.readAsText(e.target.files[0]);
     };
 
-    var editQuiz = function (e) {
+    var editQuiz = function (e) {//start the process to load quiz so it can be edited
         onChange(e);
         setTimeout(function () { // a timer used to give enough time for the JSON file to be read.
             loadQuizElements();
         }, 2000);
     };
 
-    var loadQuiz = function (e) {
+    var loadQuiz = function (e) {//starts the process to load the quiz JSON file so it can be played
         onChange(e);
         setTimeout(function () { // a timer used to give enough time for the JSON file to be read.
             UICtrl.clearQuiz();
@@ -316,13 +309,12 @@ var controller = (function (dataCtrl, UICtrl) { //controller
     };
 
     var loadQuizElements = function () {
+        //used to set up the quiz maker form os that a quiz can be edited
         let quizBuildData = dataCtrl.getQuizBuildData();
         uiElem.txtTitle.val(quizBuildData.quizTitle);
-        console.log(quizBuildData);
         uiElem.editQuestions.empty();
         quizBuildData.questions.forEach(function (q, i) {
             uiElem.editQuestions.append(UICtrl.getQuestionHTML);
-            // question container 
             var qCon = $($(".questionContainer")[i]);
             qCon.find(".questionText").val(q.question);
             q.options.forEach(function (o, j) {
@@ -334,7 +326,7 @@ var controller = (function (dataCtrl, UICtrl) { //controller
         });
     };
 
-    var checkCorrect = function () {
+    var checkCorrect = function () {//used to check user answers to see if they are correct.
         var numOfCorrect = 0;
         var quizData = dataCtrl.getQuizLoadData();
         $(uiElem.questionContainer).each(function (i, q) { // i is index and q is the question
@@ -355,7 +347,6 @@ var controller = (function (dataCtrl, UICtrl) { //controller
             }
         });
         dataCtrl.setQuizComplete(false, numOfCorrect);
-        console.log(numOfCorrect);
         return numOfCorrect;
     };
 
@@ -365,7 +356,6 @@ var controller = (function (dataCtrl, UICtrl) { //controller
         var quizData = dataCtrl.getQuizLoadData();
         uiElem.quizTitle.text(quizData.quizTitle);
         dataCtrl.setNumOfQuestions(quizData.questions.length); // set the number of questions 
-        console.log(dataCtrl.getNumOfQuestions() + " " + quizData.questions.length);
         quizData.questions.forEach(function (q, i) { // loops through questions
             uiElem.displayQuestions.append(question);
             $(uiElem.questionContainer).last().append('<div class="txtQuestionTitle">' + (i + 1) + " " + quizData.questions[i].question + '<span></span></div>');
@@ -389,25 +379,20 @@ var controller = (function (dataCtrl, UICtrl) { //controller
         // check if the quiz has any questions
         if ($(uiElem.questionContainer).length == 0) {
             isValid = false;
-            console.log("cant have a quiz with no questions");
         }
         $(uiElem.questionContainer).each(function (i) {
             let qCon = $($(uiElem.questionContainer)[i]);
             // check if there are more than 1 options per question
             if (qCon.find("li").length < 2) {
                 isValid = false;
-                console.log("you need more than 1 option per question");
             }
             // check at least one answer is selected or if not all answer are selected as the correct answers
             if (qCon.find(":checked").length == 0) {
                 isValid = false;
-                console.log("checkbox for question left blank");
             } else if (qCon.find(":checked").length == qCon.find(".chkCorrect").length) {
                 isValid = false;
-                console.log("cant have all the boxes checked");
             }
         });
-        console.log("_____________the form is valid: " + isValid + " __________")
         return isValid;
     };
 
@@ -416,6 +401,6 @@ var controller = (function (dataCtrl, UICtrl) { //controller
             setupEvents();
         }
     };
-})(dataController, uiControler);
+})(dataController, uiController);
 
 controller.init(); // <-- starting point of the application
