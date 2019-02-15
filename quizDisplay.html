@@ -36,15 +36,15 @@
                 <label for="txtTitle">Game Name</label>
                 <input type="text" id="txtTitle" class="form-control" placeholder="Name">
                 <p class="txtError">The title cant be left blank.</p>
-                <ol id="editQuestions" >
-                    <li class="questionContainer">
+                <ol id="editQuestions" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <li class="questionContainer" draggable="true" ondragstart="drag(event)">
                         <button class="btn btn-danger btnDeleteQuestion">Delete Questions</button>
                         <label for="txtQuestionTitle"></label>
                         <textarea name="txtQuestionTitle" class="form-control questionText" id="txtQuestionTitle" cols="10"
                             rows="3" placeholder="Question"></textarea>
                         <p class="txtError"> The question can't left blank</p>
                         <ol class="option" type="A">
-                            <li>
+                            <li >
                                 <button class="btn btn-danger btnDeleteOption">Delete Option</button>
                                 <input type="text" class="form-control optionText" placeholder="Option">
                                 <input class="chkCorrect" type="checkbox" value="">
@@ -72,4 +72,5 @@
     </div>
 </body>
 <script type="text/JavaScript" src="quizDisplay.js"></script>
+
 </html>
