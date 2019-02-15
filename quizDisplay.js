@@ -413,8 +413,8 @@ function allowDrop(ev) {
 }
 
 function drag(ev) {
-    // $(".questionContainer").height("50px");
-    // $(".questionContainer").children().hide();
+    $(".questionContainer").height("50px");
+    $(".questionContainer").children().hide();
     // $(".questionContainer").css("max-height","0.15s ease-out");
     //transition: max-height 0.15s ease-out;
     $(ev.target).attr("id", "drag");
@@ -435,6 +435,6 @@ function drop(ev) {
    $("#editQuestions").append(document.getElementById(data));// ev.target.appendChild(data);
    $(ev.target).removeAttr("id");
     ev.preventDefault();
-    // $(".questionContainer").height("auto");
-    //$(".questionContainer").children().show();
+    $(".questionContainer").height("auto");
+    $(".questionContainer").children().show();
 }
