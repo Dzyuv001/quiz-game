@@ -32,20 +32,20 @@ var dataController = (function () { //model
         setNumOfQuestions: function (numOfQ) { //set number of questions there are in the quiz
             numOfQuestions = numOfQ;
         },
-        getNumOfQuestions: function () { //get number of questions 
+        getNumOfQuestions: function () { //get number of questions
             return numOfQuestions;
         },
         setNumOfCorrect: function (numOfC) { //set the number of correct questions
             numOfCorrect = numOfC;
         },
-        getNumOfCorrect: function () { //get number of questions the user answered correctly 
+        getNumOfCorrect: function () { //get number of questions the user answered correctly
             return numOfCorrect;
         },
         setQuizComplete: function (quizIncom, numOfC) { //set the quiz as complete and set the number of the questions the user answered correctly
             quizIncomplete = quizIncom;
             numOfCorrect = numOfC;
         },
-        dataReset: function () { //used to reset the data class 
+        dataReset: function () { //used to reset the data class
             numOfQuestions = 0;
             numOfCorrect = 0;
             quizIncomplete = true;
@@ -55,7 +55,7 @@ var dataController = (function () { //model
 
 var uiController = (function () { //view
     var questionHTML, optionHTML; // stores html that is added to make the up the build quiz form.
-    var uiElements = { // stores all the ui classes and ids 
+    var uiElements = { // stores all the ui classes and ids
         btnTab1: $("#tab1"),
         btnTab2: $("#tab2"),
         btnEditQuiz: $("#btnEditQuiz"),
@@ -81,8 +81,26 @@ var uiController = (function () { //view
         selected: "selected"
     };
 
-    function htmlData() { //used to set the questionHTML, optionHTML 
-        questionHTML = '<li class="questionContainer" draggable="true" ondragstart="drag(event)">';
+    function htmlData() { //used to set the questionHTML, optionHTML
+        // questionHTML = '<li class="questionContainer" draggable="true" ondragstart="drag(event)">';
+        // questionHTML += '<button class="btn btn-danger btnDeleteQuestion">Delete Questions</button>';
+        // questionHTML += '<label for="txtQ1Title"></label>';
+        // questionHTML += '<textarea name="txtQuestionTitle" class="form-control questionText" id="txtQuestionTitle" cols="10" rows="3" placeholder="Question"></textarea>';
+        // questionHTML += '<p class="txtError"> The question can`t left blank</p>';
+        // questionHTML += '<ol class="option" type="A">';
+        // questionHTML += '</ol>';
+        // questionHTML += '<button class="btn btn-primary btnAddQuestionOption">+ Add Option</button>';
+        // questionHTML += '</li>';
+        // optionHTML = '<li>';
+        // optionHTML += '<button class="btn btn-danger btnDeleteOption">Delete Option</button>';
+        // optionHTML += '<input type="text" class="form-control optionText" placeholder="Option">';
+        // optionHTML += '<input class="chkCorrect" type="checkbox" value="">';
+        // optionHTML += '<p class="txtOptionError"> An option has been left blank</p>';
+        // optionHTML += '</li>';
+        // popQuestion = ['<div class="questionContainer"></div>'];
+        // popOption = ['<div class="btnOption">', '</div>'];
+
+        questionHTML = '<li class="questionContainer">';
         questionHTML += '<button class="btn btn-danger btnDeleteQuestion">Delete Questions</button>';
         questionHTML += '<label for="txtQ1Title"></label>';
         questionHTML += '<textarea name="txtQuestionTitle" class="form-control questionText" id="txtQuestionTitle" cols="10" rows="3" placeholder="Question"></textarea>';
@@ -123,13 +141,13 @@ var uiController = (function () { //view
     var validation = function () { // used to see if all the questions had been answered
         var valid;
         $(uiElements.questionContainer).each(function (i, q) { // used to loop through all the questions
-            if ($(q).find(".selected").length > 0) { // if an answer is not selected 
+            if ($(q).find(".selected").length > 0) { // if an answer is not selected
                 valid = true;
             } else {
                 valid = false;
             }
         });
-        return valid; // returns the validity of user inputs 
+        return valid; // returns the validity of user inputs
     };
 
     var highlightCorrect = function (quizData) {
@@ -183,7 +201,7 @@ var uiController = (function () { //view
                 $(this).parent().find(".txtOptionError").hide();
             }
         },
-        saveGame: function (isQuizValid, quizBuildData, download) { //saves the 
+        saveGame: function (isQuizValid, quizBuildData, download) { //saves the
             if (isQuizValid()) {
                 getQuizData(quizBuildData);
                 var jsonData = JSON.stringify(quizBuildData);
@@ -216,7 +234,7 @@ var uiController = (function () { //view
         getOptionHTML: function () { // used to get the option div html
             return optionHTML;
         },
-        displayError: function (elem, valid, type) { // help show errors  
+        displayError: function (elem, valid, type) { // help show errors
             if (elem.val() == "" || !valid) {
                 elem.addClass("is-invalid");
                 switch (type) {
@@ -241,7 +259,7 @@ var uiController = (function () { //view
 })();
 
 var controller = (function (dataCtrl, UICtrl) { //controller
-    var uiElem = UICtrl.getUIElem(); //link to the ui dictionary from the UI class 
+    var uiElem = UICtrl.getUIElem(); //link to the ui dictionary from the UI class
     var setupEvents = function () {
         // used to set up all the events in a since a clean way
         //also nice for testing since you can turn off all the events
@@ -272,7 +290,7 @@ var controller = (function (dataCtrl, UICtrl) { //controller
         });
     };
 
-    var download = function (content, fileName, contentType) { //used for file download 
+    var download = function (content, fileName, contentType) { //used for file download
         var a = document.createElement("a");
         var file = new Blob([content], {
             type: contentType
@@ -355,7 +373,7 @@ var controller = (function (dataCtrl, UICtrl) { //controller
         var option = ['<div class="btnOption">', '</div>'];
         var quizData = dataCtrl.getQuizLoadData();
         uiElem.quizTitle.text(quizData.quizTitle);
-        dataCtrl.setNumOfQuestions(quizData.questions.length); // set the number of questions 
+        dataCtrl.setNumOfQuestions(quizData.questions.length); // set the number of questions
         quizData.questions.forEach(function (q, i) { // loops through questions
             uiElem.displayQuestions.append(question);
             $(uiElem.questionContainer).last().append('<div class="txtQuestionTitle">' + (i + 1) + " " + quizData.questions[i].question + '<span></span></div>');
@@ -367,7 +385,7 @@ var controller = (function (dataCtrl, UICtrl) { //controller
         uiElem.btnCheck.show();
     };
 
-    
+
 
     var isQuizValid = function () { // used to ensure that the quiz is playable
         var isValid = true;

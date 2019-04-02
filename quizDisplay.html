@@ -36,8 +36,10 @@
                 <label for="txtTitle">Game Name</label>
                 <input type="text" id="txtTitle" class="form-control" placeholder="Name">
                 <p class="txtError">The title cant be left blank.</p>
-                <ol id="editQuestions" ondrop="drop(event)" ondragover="allowDrop(event)">
-                    <li class="questionContainer" draggable="true" ondragstart="drag(event)">
+                <!-- ondrop="drop(event)" ondragover="allowDrop(event)" -->
+                <ol id="editQuestions">
+                        <!-- draggable="true" ondragstart="drag(event)" -->
+                    <li class="questionContainer">
                         <button class="btn btn-danger btnDeleteQuestion">Delete Questions</button>
                         <label for="txtQuestionTitle"></label>
                         <textarea name="txtQuestionTitle" class="form-control questionText" id="txtQuestionTitle" cols="10"
